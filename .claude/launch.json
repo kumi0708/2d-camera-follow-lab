@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "camera-lab", "runtimeExecutable": "node", "runtimeArgs": ["/Users/atu/Documents/gitTest/2d-camera-follow-lab/serve.mjs", "8123"], "port": 8123 }
+  ]
+}
