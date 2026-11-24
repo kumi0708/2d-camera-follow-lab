@@ -2,6 +2,8 @@
 
 [English](README.md) | **日本語**
 
+**▶ ブラウザで遊ぶ: https://kumi0708.github.io/2d-camera-follow-lab/**
+
 2D ゲームのカメラ追従を、同じ世界の中で 8 種類切り替えて比べられるデモです。
 SpriteCook の記事「[2D camera follow: dead zone & look-ahead](https://www.spritecook.ai/blog/2d-camera-follow-dead-zone-look-ahead)」の内容を実装しています。
 

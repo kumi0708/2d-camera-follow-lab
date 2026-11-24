@@ -2,6 +2,8 @@
 
 **English** | [日本語](README.ja.md)
 
+**▶ Play it in your browser: https://kumi0708.github.io/2d-camera-follow-lab/**
+
 A demo that lets you switch between eight 2D camera follow styles in the same world and compare them.
 It implements the SpriteCook article "[2D camera follow: dead zone & look-ahead](https://www.spritecook.ai/blog/2d-camera-follow-dead-zone-look-ahead)".
 
