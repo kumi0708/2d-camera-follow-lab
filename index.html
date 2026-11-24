@@ -19,49 +19,56 @@
         <div class="hud top"><div id="hud-mode" class="chip"></div></div>
         <div id="hud-stats" class="hud bottom"></div>
       </div>
-      <div class="keys">
-        <span><kbd>WASD</kbd>/<kbd>↑↓←→</kbd> 移動</span>
-        <span><kbd>Shift</kbd> ダッシュ</span>
-        <span><kbd>1</kbd>–<kbd>8</kbd> モード</span>
-        <span><kbd>IJKL</kbd> 相棒</span>
-        <span><kbd>マウス</kbd> エイム</span>
-        <span><kbd>G</kbd> デバッグ</span>
-        <span><kbd>P</kbd> ピクセルスナップ</span>
-        <span><kbd>R</kbd> リセット</span>
-      </div>
     </section>
 
     <aside class="panel">
-      <div class="card">
-        <h2>カメラモード</h2>
-        <div id="modes" class="modes"></div>
-        <p id="mode-desc" class="desc"></p>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h2>パラメータ</h2>
-          <button id="reset-params" class="ghost">既定値に戻す</button>
+      <div class="col">
+        <div class="card">
+          <h2>カメラモード</h2>
+          <div id="modes" class="modes"></div>
+          <p id="mode-desc" class="desc"></p>
         </div>
-        <div id="params"></div>
+
+        <div class="card grow">
+          <div class="card-head">
+            <h2>パラメータ</h2>
+            <button id="reset-params" class="ghost">既定値に戻す</button>
+          </div>
+          <div id="params"></div>
+        </div>
       </div>
 
-      <div class="card">
-        <h2>カメラとプレイヤーのずれ</h2>
-        <canvas id="graph" width="300" height="90"></canvas>
-        <div class="legend"><span class="lx">■ x</span><span class="ly">■ y</span><span class="muted">±64px / 直近5秒</span></div>
-      </div>
+      <div class="col">
+        <div class="card">
+          <h2>カメラとプレイヤーのずれ</h2>
+          <canvas id="graph" width="300" height="80"></canvas>
+          <div class="legend"><span class="lx">■ x</span><span class="ly">■ y</span><span class="muted">±64px / 直近5秒</span></div>
+        </div>
 
-      <div class="card">
-        <h2>ミニマップ</h2>
-        <canvas id="minimap" width="300" height="200"></canvas>
-      </div>
+        <div class="card fill">
+          <h2>ミニマップ</h2>
+          <canvas id="minimap" width="300" height="200"></canvas>
+        </div>
 
-      <div class="card">
-        <h2>表示</h2>
-        <label class="toggle"><input id="opt-debug" type="checkbox"><span>デバッグ表示（目標・箱・範囲）</span></label>
-        <label class="toggle"><input id="opt-snap" type="checkbox"><span>ピクセルスナップ（カメラとキャラを整数座標に）</span></label>
-        <label class="toggle"><input id="opt-buddy" type="checkbox"><span>相棒スライムを自動で動かす</span></label>
+        <div class="card">
+          <h2>表示</h2>
+          <label class="toggle"><input id="opt-debug" type="checkbox"><span>デバッグ表示（目標・箱・範囲）</span></label>
+          <label class="toggle"><input id="opt-snap" type="checkbox"><span>ピクセルスナップ</span></label>
+          <label class="toggle"><input id="opt-buddy" type="checkbox"><span>相棒スライムを自動で動かす</span></label>
+        </div>
+        <div class="card">
+          <h2>操作</h2>
+          <div class="keys">
+            <span><kbd>WASD</kbd></span><span>移動</span>
+            <span><kbd>Shift</kbd></span><span>ダッシュ</span>
+            <span><kbd>1</kbd>–<kbd>8</kbd></span><span>モード</span>
+            <span><kbd>マウス</kbd></span><span>エイム</span>
+            <span><kbd>IJKL</kbd></span><span>相棒</span>
+            <span><kbd>G</kbd></span><span>デバッグ</span>
+            <span><kbd>P</kbd></span><span>スナップ</span>
+            <span><kbd>R</kbd></span><span>リセット</span>
+          </div>
+        </div>
       </div>
     </aside>
   </main>
