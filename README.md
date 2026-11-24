@@ -1,100 +1,100 @@
 # 2D Camera Follow Lab
 
-**English** | [日本語](README.ja.md)
+**日本語** | [English](README.en.md)
 
-**▶ Play it in your browser: https://kumi0708.github.io/2d-camera-follow-lab/**
+**▶ ブラウザで遊ぶ: https://kumi0708.github.io/2d-camera-follow-lab/**
 
-A demo that lets you switch between eight 2D camera follow styles in the same world and compare them.
-It implements the SpriteCook article "[2D camera follow: dead zone & look-ahead](https://www.spritecook.ai/blog/2d-camera-follow-dead-zone-look-ahead)".
+2D ゲームのカメラ追従を、同じ世界の中で 8 種類切り替えて比べられるデモです。
+SpriteCook の記事「[2D camera follow: dead zone & look-ahead](https://www.spritecook.ai/blog/2d-camera-follow-dead-zone-look-ahead)」の内容を実装しています。
 
-Every mode has the same shape: each tick, pick a goal, then ease toward it.
+どのモードも「毎 tick 目標（goal）を決め、そこへイージングで近づく」という同じ形で書かれています。
 
 ```
-cam += (goal - cam) * (1 - exp(-rate * dt))   // rate is per second, so it is frame-rate independent
+cam += (goal - cam) * (1 - exp(-rate * dt))   // rate は「毎秒」なのでフレームレートに依存しない
 ```
 
-## Running it
+## 起動
 
-The code uses ES modules, so open it through a local server. There are no dependencies.
+ES モジュールを使うので、ローカルサーバー経由で開きます（依存パッケージはありません）。
 
 ```bash
 node serve.mjs
 ```
 
-Then open http://localhost:8123. Change the port with the `PORT` environment variable or the first argument.
+ブラウザで http://localhost:8123 を開きます。ポートは `PORT` 環境変数か第 1 引数で変更できます。
 
-## Controls
+## 操作
 
-| Key | Action |
+| キー | 動作 |
 | --- | --- |
-| WASD / arrow keys | Move |
-| Shift | Run |
-| 1–8 | Switch mode |
-| IJKL | Move the slime buddy (for two targets) |
-| Mouse | Aim |
-| G | Toggle debug overlay |
-| P | Toggle pixel snapping |
-| R | Reset |
+| WASD / 矢印キー | 移動 |
+| Shift | ダッシュ |
+| 1〜8 | モード切替 |
+| IJKL | 相棒スライムを操作（2ターゲット用） |
+| マウス | エイム |
+| G | デバッグ表示の切替 |
+| P | ピクセルスナップの切替 |
+| R | リセット |
 
-The side panel has live sliders for each mode's parameters, a graph of the camera's offset from the player, and a minimap.
+右側のパネルで、モードごとのパラメータをスライダーでその場で調整できます。カメラとプレイヤーのずれのグラフと、ミニマップもあります。
 
-## Camera modes
+## カメラモード
 
-Defaults assume a 128×128 px view at 60 ticks per second. Scale pixel values with your view size.
+既定値は 128×128px のビュー、60 tick/秒を前提にしています。ピクセル値はビューの大きさに合わせて拡大縮小してください。
 
-| # | Mode | How it works | Defaults |
+| # | モード | 仕組み | 既定値 |
 | --- | --- | --- | --- |
-| 1 | Locked | `cam = p` | — |
-| 2 | Smooth | Exponential ease toward the player | rate 2.6/s |
-| 3 | Dead zone | Clamp the camera to a box around the player | half-size x 22 px, y 18 px |
-| 4 | Room by room | Smoothstep slide to the current room's centre | room 128 px, 0.55 s |
-| 5 | Look-ahead | Lead ahead using movement direction only | 32 px, rate 3.4/s |
-| 6 | Points of interest | Pull toward nearby points with a smoothstep weight | 60 px → 24 px, pull 0.6, rate 3.5 |
-| 7 | Aim offset | Shift by a share of the cursor's screen offset | 0.45, rate 8 |
-| 8 | Two targets | Follow the midpoint and zoom out with distance | padding 104, view 128–240 px |
+| 1 | ロック | `cam = p` | — |
+| 2 | スムーズ | プレイヤーへ指数イージング | rate 2.6/秒 |
+| 3 | デッドゾーン | プレイヤーを中心にした箱の中にカメラをクランプ | 半幅 x 22px, y 18px |
+| 4 | 部屋ごと | 部屋の中心へ smoothstep でスライド | 部屋 128px, 0.55 秒 |
+| 5 | 先読み | 移動「方向」だけを見て前方へリード | 32px, rate 3.4/秒 |
+| 6 | 注目点 | 近くの見どころへ smoothstep の重みで引き寄せ | 60px→24px, pull 0.6, rate 3.5 |
+| 7 | エイム | カーソルの画面オフセットの一定割合だけずらす | 0.45, rate 8 |
+| 8 | 2ターゲット | 中点を追い、距離に応じてズームアウト | 余白 104, ビュー 128〜240px |
 
-### Implementation notes
+### 実装上のポイント
 
-- **A rate of 0 snaps to the goal** instead of freezing the camera.
-- **Distances and shares of 0 reproduce the locked camera** in every mode. The tests check this.
-- **Aim uses the cursor's screen offset, not its world position.** The world position moves with the camera, so with a still mouse the camera overshoots to about 0.82 of the screen offset. Turn on "naive implementation" in the aim parameters to see this pitfall.
-- **Two targets drops the buddy once it is past the cutoff distance.** Without this the view grows without limit.
-- **The camera updates after the player moves, in the same tick,** on a fixed 60 Hz timestep.
-- **Pixel snapping applies to both the camera and the characters.** Snapping only the camera makes the characters shake.
+- **rate が 0 のときは即座に追いつく。** 止まってしまわないようにしています。
+- **距離や割合を 0 にすると、どのモードもロックと同じ動きになる。** テストで確認しています。
+- **エイムはカーソルのワールド座標ではなく、画面上のオフセットを使う。** ワールド座標を使うとカメラと一緒にカーソルも動くため、マウスを止めてもカメラは画面オフセットの約 0.82 倍の位置まで行き過ぎます。パラメータ欄の「素朴な実装」で、この落とし穴を体験できます。
+- **2ターゲットは、相棒が切り離し距離より離れたら外す。** そうしないとビューが際限なく広がります。
+- **カメラはプレイヤーが動いた後、同じ tick 内で更新する。** 固定タイムステップ（60Hz）で動かしています。
+- **ピクセルスナップはカメラとキャラクターの両方に掛ける。** カメラだけを整数座標にすると、キャラクターが揺れて見えます。
 
-## Files
+## ファイル構成
 
-| File | Contents |
+| ファイル | 内容 |
 | --- | --- |
-| `camera.js` | The camera: all eight modes, pure logic with no rendering |
-| `world.js` | Procedural pixel-art world and ambient effects (fireflies, snow, cloud shadows) |
-| `sprites.js` | The hero, the slime, and the points of interest (crystals, chest, campfire, portal, statue) |
-| `main.js` | Game loop, input, rendering and UI |
-| `test.mjs` | Tests against the article's numbers |
-| `serve.mjs` | Dependency-free static file server |
+| `camera.js` | カメラ本体（8 モード、描画に依存しない純粋なロジック） |
+| `world.js` | 手続き生成のピクセルアートの世界と環境演出（蛍、雪、雲の影など） |
+| `sprites.js` | 主人公、スライム、注目点（結晶、宝箱、焚き火、転移門、石像）の描画 |
+| `main.js` | ゲームループ、入力、描画、UI |
+| `test.mjs` | 記事の数値を再現できているかのテスト |
+| `serve.mjs` | 依存なしの静的ファイルサーバー |
 
-There are no image files. All art is drawn in code.
+画像ファイルは使っておらず、絵はすべてコードで描いています。
 
-## Tests
+## テスト
 
 ```bash
 node test.mjs
 ```
 
-The tests check the article's numbers, for example:
+記事の数値と照合します。たとえば次のような値です。
 
-- Smooth: a 100 px jump is within 1 px after 107 ticks
-- Look-ahead: the lead is 30.9 px after 1 s, walking or running
-- Points of interest: the settled offset is 14.0 px at 40 px and 14.4 px at 24 px
-- Aim: a cursor 100 px away gives 45 px
-- Two targets: 100 px apart gives a 204 px view; 200 px apart stops at the 240 px cap
+- スムーズ：100px 離れた位置に 1px 以内まで近づくのに 107 tick
+- 先読み：歩きでも走りでも、1 秒後のリードは 30.9px
+- 注目点：落ち着いたときのずれは 40px で 14.0px、24px で 14.4px
+- エイム：100px 先のカーソルで 45px
+- 2ターゲット：100px 離れるとビュー 204px、200px 離れると上限の 240px
 
-## Debugging
+## デバッグ
 
-From the browser console, `window.lab` exposes the camera and state.
+ブラウザのコンソールで `window.lab` からカメラや状態を触れます。
 
 ```js
-lab.setMode('poi');     // switch mode
-lab.teleport(78, 330);  // jump next to the campfire
+lab.setMode('poi');     // モード切替
+lab.teleport(78, 330);  // 焚き火の近くへ瞬間移動
 lab.cam.params.poi.pull = 1;
 ```
