@@ -321,10 +321,10 @@ function roundRect(x, y, w, h, r) {
 
 function drawReticle(x, y) {
   ctx.strokeStyle = '#ff9f1c';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(x, y, 13, 0, Math.PI * 2); ctx.stroke();
   ctx.beginPath();
-  for (const [a, b, c, d] of [[x - 16, y, x - 5, y], [x + 5, y, x + 16, y], [x, y - 16, x, y - 5], [x, y + 5, x, y + 16]]) { ctx.moveTo(a, b); ctx.lineTo(c, d); }
+  for (const [a, b, c, d] of [[x - 22, y, x - 7, y], [x + 7, y, x + 22, y], [x, y - 22, x, y - 7], [x, y + 7, x, y + 22]]) { ctx.moveTo(a, b); ctx.lineTo(c, d); }
   ctx.stroke();
   ctx.fillStyle = '#ff9f1c';
   ctx.fillRect(x - 1, y - 1, 2, 2);
@@ -333,11 +333,11 @@ function drawReticle(x, y) {
 function drawDebug(toS, scale) {
   const m = state.mode;
   const k = cam.params[m];
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 2.5;
   const [px, py] = toS(player.x, player.y);
   const [ccx, ccy] = toS(cam.x, cam.y);
   const [gx, gy] = toS(cam.goal.x, cam.goal.y);
-  const dashed = (on) => ctx.setLineDash(on ? [6, 5] : []);
+  const dashed = (on) => ctx.setLineDash(on ? [9, 6] : []);
 
   if (m === 'deadzone') {
     ctx.strokeStyle = 'rgba(76,201,240,0.95)';
@@ -389,11 +389,11 @@ function drawDebug(toS, scale) {
     ctx.strokeStyle = 'rgba(255,209,102,0.6)'; dashed(true);
     ctx.beginPath(); ctx.moveTo(ccx, ccy); ctx.lineTo(gx, gy); ctx.stroke(); dashed(false);
     ctx.fillStyle = '#ffd166';
-    ctx.beginPath(); ctx.arc(gx, gy, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(gx, gy, 6, 0, Math.PI * 2); ctx.fill();
   }
   ctx.strokeStyle = 'rgba(255,255,255,0.9)';
   ctx.beginPath();
-  ctx.moveTo(ccx - 10, ccy); ctx.lineTo(ccx + 10, ccy); ctx.moveTo(ccx, ccy - 10); ctx.lineTo(ccx, ccy + 10);
+  ctx.moveTo(ccx - 14, ccy); ctx.lineTo(ccx + 14, ccy); ctx.moveTo(ccx, ccy - 14); ctx.lineTo(ccx, ccy + 14);
   ctx.stroke();
 }
 
@@ -401,13 +401,13 @@ function arrow(x0, y0, x1, y1, col) {
   const l = Math.hypot(x1 - x0, y1 - y0);
   if (l < 3) return;
   const a = Math.atan2(y1 - y0, x1 - x0);
-  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3;
+  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - Math.cos(a) * 8, y1 - Math.sin(a) * 8); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x1, y1);
   ctx.lineTo(x1 - Math.cos(a - 0.5) * 12, y1 - Math.sin(a - 0.5) * 12);
   ctx.lineTo(x1 - Math.cos(a + 0.5) * 12, y1 - Math.sin(a + 0.5) * 12);
   ctx.fill();
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 2.5;
 }
 
 // minimap
@@ -455,6 +455,7 @@ function frame(now) {
   last = now;
   fps += (1 / Math.max(dt, 1e-4) - fps) * 0.05;
   acc += dt;
+  if (state.paused) acc = 0;
   while (acc >= STEP) { tick(STEP); acc -= STEP; }
   render();
   drawMinimap();
@@ -473,7 +474,13 @@ function frame(now) {
 }
 
 // handle for poking at the lab from the devtools console
-window.lab = { cam, player, buddy, state, setMode, teleport: (x, y) => { player.x = x; player.y = y; cam.reset(player); cam.setMode(state.mode, player); } };
+window.lab = {
+  cam, player, buddy, state, keys, mouse, particles, setMode,
+  teleport: (x, y) => { player.x = x; player.y = y; cam.reset(player); cam.setMode(state.mode, player); },
+  // deterministic stepping for recordings: set state.paused = true, then step(n) and draw()
+  step: (n = 1) => { for (let i = 0; i < n; i++) tick(STEP); },
+  draw: () => { render(); drawMinimap(); drawGraph(); },
+};
 
 cam.reset(player);
 setMode(state.mode);
